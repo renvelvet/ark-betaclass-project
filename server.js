@@ -4,7 +4,7 @@ const cors = require('cors')
 
 const Pool = require('pg').Pool
 const app = Express()
-const port = 3000
+const port = 3001
 
 const db = new Pool({
     user: 'oiqcuocuhpeuco',
@@ -57,4 +57,4 @@ app.delete('/:nama',async(req,res)=>{
     res.json('Data terhapus')
 })
 
-app.listen(port, ()=>console.log('localhost:3000'))
+app.listen(port, ()=>console.log('localhost:3001'))
