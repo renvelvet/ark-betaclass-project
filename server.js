@@ -15,8 +15,9 @@ const db = new Pool({
     ssl: true
 })
 
-
+db.connect()
 app.use(bodyParser())
+app.use(cors())
 // get seluruh users
 app.get('/',async(req, res)=>{
     const resData = await db.query('select * from users')
