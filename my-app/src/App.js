@@ -2,7 +2,7 @@ import React,{Component} from 'react'
 import {InputGroup, FormControl, Container, Button, Table, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
-const url = 'http://192.168.1.10:3001'
+const url = 'http://127.0.0.1:3001'
 
 class App extends Component{
   state = {
