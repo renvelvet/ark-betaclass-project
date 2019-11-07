@@ -1,5 +1,6 @@
 const Express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const Pool = require('pg').Pool
 const app = Express()
