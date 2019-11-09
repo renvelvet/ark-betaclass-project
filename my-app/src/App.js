@@ -1,10 +1,12 @@
 import React,{Component} from 'react'
-import {InputGroup, FormControl, Container, Button, Table, Modal} from 'react-bootstrap'
+import Jumbotron from 'react-bootstrap/Jumbotron'
+import {InputGroup, FormControl, Container, Button, Table, Modal, Navbar, Form} from 'react-bootstrap'
 import Axios from 'axios'
 
 const url = 'http://127.0.0.1:3001'
 
 class App extends Component{
+  // state empty tabel
   state = {
     data:[],
     showModal:false,
@@ -104,101 +106,150 @@ class App extends Component{
   render(){
     return (
       <Container>
-        {/* Tampilan From */}
-        <InputGroup style={{margin:10}} className="mb-3">
-         <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">A</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-            onChange={(event)=>this.setState({nama:event.target.value})}
-            style={{marginRight:10}}
-            placeholder="Nama"
-            aria-label="Nama"
-            aria-describedby="basic-addon1"
-          />
-          <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">B</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-            onChange={(event)=>this.setState({umur:event.target.value})}
-            style={{marginRight:10}}
-            placeholder="Umur"
-            aria-label="Umur"
-            aria-describedby="basic-addon1"
-          />
-          <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">C</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-          onChange={(event)=>this.setState({alamat:event.target.value})}
-           style={{marginRight:10}}
-            placeholder="Alamat"
-            aria-label="Alamat"
-            aria-describedby="basic-addon1"
-          />
-          <Button onClick={()=>this.postDataFromApi()} variant='primary'>ADD</Button>
-         </InputGroup>
-        {/* Tampilan Table */}
-        <Table striped bordered hover variant="dark">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nama</th>
-              <th>Umur</th>
-              <th>Alamat</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-           {this.state.data.map((item, index)=>(
-             <tr key={index}>
-              <td>{index+1}</td>
-              <td>{item.nama}</td>
-              <td>{item.umur}</td>
-              <td>{item.alamat}</td>
-              <td style={{width:50}}>
-                <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
-              </td>
-           </tr>
-           ))}
-          </tbody>
-        </Table>
-        {/* Modal */}
-
-        <Modal show={this.state.showModal} onHide={()=>this.hideModal()}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Data</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormControl 
-          value={this.state.dNama} 
-          onChange={(event)=>this.setState({dNama:event.target.value})} 
-          style={{marginBottom:10}} 
-          placeholder='Nama'
-          />
-          <FormControl 
-          value={this.state.dUmur} 
-          onChange={(event)=>this.setState({dUmur:event.target.value})} 
-          style={{marginBottom:10}} 
-          placeholder='Umur'
-          />
-          <FormControl 
-          value={this.state.dAlamat} 
-          onChange={(event)=>this.setState({dAlamat:event.target.value})} 
-          style={{marginBottom:10}} 
-          placeholder='Alamat'
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={()=>this.deleteDataApi()}>
-            Delete
-          </Button>
-          <Button variant="primary" onClick={()=>this.editDataApi()}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Navbar bg="dark" variant="dark">
+          <Navbar.Brand href="#home">
+            <img
+              alt=""
+              src="/logo.svg"
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+            />{' '}
+            Layanan BK
+          </Navbar.Brand>
+          <Navbar.Toggle />
+          <Form inline style={{marginLeft: 160}}>
+            <InputGroup style={{marginRight: 4}}>
+              <InputGroup.Prepend>
+                <InputGroup.Text id="basic-addon1">Username</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                style={{width: 150}} 
+                placeholder="NIM/NIP"
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+              />
+            </InputGroup>
+          </Form>
+          <Form inline>
+            <InputGroup>
+              <InputGroup.Prepend>
+                <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl type="text" placeholder="Kata sandi" className=" mr-sm-2" style={{width: 150}}/>
+              <Button type="submit" style={{marginRight: 10}}>Login</Button>
+              <Navbar.Text className="justify-content-end"  >
+                <a href="#login">or Create Account?</a>
+              </Navbar.Text>
+            </InputGroup>
+          </Form>
+        </Navbar>
+        <Jumbotron>
+          <h1>Selamat Datang di Layanan BK dalam Jaringan!</h1>
+          <p>
+            Temukan konten psikologi yang telah dikurasi oleh tim kami!
+          </p>
+          <p>
+            <Button variant="primary">See Blog>></Button>
+          </p>
+        </Jumbotron>
       </Container>
+      // <Container>
+      //   {/* Tampilan From */}
+      //   <InputGroup style={{margin:10}} className="mb-3">
+      //    <InputGroup.Prepend>
+      //       <InputGroup.Text id="basic-addon1">A</InputGroup.Text>
+      //     </InputGroup.Prepend>
+      //     <FormControl
+      //       onChange={(event)=>this.setState({nama:event.target.value})}
+      //       style={{marginRight:10}}
+      //       placeholder="Nama"
+      //       aria-label="Nama"
+      //       aria-describedby="basic-addon1"
+      //     />
+      //     <InputGroup.Prepend>
+      //       <InputGroup.Text id="basic-addon1">B</InputGroup.Text>
+      //     </InputGroup.Prepend>
+      //     <FormControl
+      //       onChange={(event)=>this.setState({umur:event.target.value})}
+      //       style={{marginRight:10}}
+      //       placeholder="Umur"
+      //       aria-label="Umur"
+      //       aria-describedby="basic-addon1"
+      //     />
+      //     <InputGroup.Prepend>
+      //       <InputGroup.Text id="basic-addon1">C</InputGroup.Text>
+      //     </InputGroup.Prepend>
+      //     <FormControl
+      //     onChange={(event)=>this.setState({alamat:event.target.value})}
+      //      style={{marginRight:10}}
+      //       placeholder="Alamat"
+      //       aria-label="Alamat"
+      //       aria-describedby="basic-addon1"
+      //     />
+      //     <Button onClick={()=>this.postDataFromApi()} variant='primary'>ADD</Button>
+      //    </InputGroup>
+      //   {/* Tampilan Table */}
+      //   <Table striped bordered hover variant="dark">
+      //     <thead>
+      //       <tr>
+      //         <th>#</th>
+      //         <th>Nama</th>
+      //         <th>Umur</th>
+      //         <th>Alamat</th>
+      //         <th>Action</th>
+      //       </tr>
+      //     </thead>
+      //     <tbody>
+      //      {this.state.data.map((item, index)=>(
+      //        <tr key={index}>
+      //         <td>{index+1}</td>
+      //         <td>{item.nama}</td>
+      //         <td>{item.umur}</td>
+      //         <td>{item.alamat}</td>
+      //         <td style={{width:50}}>
+      //           <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
+      //         </td>
+      //      </tr>
+      //      ))}
+      //     </tbody>
+      //   </Table>
+      //   {/* Modal */}
+
+      //   <Modal show={this.state.showModal} onHide={()=>this.hideModal()}>
+      //   <Modal.Header closeButton>
+      //     <Modal.Title>Edit Data</Modal.Title>
+      //   </Modal.Header>
+      //   <Modal.Body>
+      //     <FormControl 
+      //     value={this.state.dNama} 
+      //     onChange={(event)=>this.setState({dNama:event.target.value})} 
+      //     style={{marginBottom:10}} 
+      //     placeholder='Nama'
+      //     />
+      //     <FormControl 
+      //     value={this.state.dUmur} 
+      //     onChange={(event)=>this.setState({dUmur:event.target.value})} 
+      //     style={{marginBottom:10}} 
+      //     placeholder='Umur'
+      //     />
+      //     <FormControl 
+      //     value={this.state.dAlamat} 
+      //     onChange={(event)=>this.setState({dAlamat:event.target.value})} 
+      //     style={{marginBottom:10}} 
+      //     placeholder='Alamat'
+      //     />
+      //   </Modal.Body>
+      //   <Modal.Footer>
+      //     <Button variant="danger" onClick={()=>this.deleteDataApi()}>
+      //       Delete
+      //     </Button>
+      //     <Button variant="primary" onClick={()=>this.editDataApi()}>
+      //       Save Changes
+      //     </Button>
+      //   </Modal.Footer>
+      // </Modal>
+      // </Container>
     )
   }
 }
