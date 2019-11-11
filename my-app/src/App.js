@@ -1,6 +1,8 @@
 import React,{Component} from 'react'
 import Jumbotron from 'react-bootstrap/Jumbotron'
-import {InputGroup, FormControl, Container, Button, Table, Modal, Navbar, Form, CardDeck, Card} from 'react-bootstrap'
+import {Link} from 'react-router-dom'
+import Create from './Create'
+import {InputGroup, FormControl, Container, Button, Navbar, Form, CardDeck, Card} from 'react-bootstrap'
 import Axios from 'axios'
 
 const url = 'http://127.0.0.1:3001'
@@ -9,24 +11,20 @@ class App extends Component{
   // state empty tabel
   state = {
     data:[],
-    showModal:false,
-    nama:'',
-    umur:'',
-    alamat:'',
+    username:'',
+    password:'',
     // untuk detail
-    dNama:'',
-    dUmur:'',
-    dAlamat:'',
-    id:''
+    dUsername:'',
+    dPassword:''
   }
   constructor(props){
     super(props)
     // this.getDataFromApi()
   }
   // jalan ketika setelah render
-  componentDidMount(){
-    this.getDataFromApi()
-  }
+  // componentDidMount(){
+  //   this.getDataFromApi()
+  // }
   //mendapatkan data dari api
   getDataFromApi = async() => {
     try {
@@ -138,8 +136,8 @@ class App extends Component{
               </InputGroup.Prepend>
               <FormControl type="text" placeholder="Kata sandi" className=" mr-sm-2" style={{width: 150}}/>
               <Button type="submit" style={{marginRight: 10}}>Login</Button>
-              <Navbar.Text className="justify-content-end"  >
-                <a href="#login">or Create Account?</a>
+              <Navbar.Text className="justify-content-end">
+                <Link to="/Create">or Create Account?</Link>
               </Navbar.Text>
             </InputGroup>
           </Form>
