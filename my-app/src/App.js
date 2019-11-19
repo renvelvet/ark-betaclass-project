@@ -1,284 +1,320 @@
 import React,{Component} from 'react'
-import Jumbotron from 'react-bootstrap/Jumbotron'
-import {Link} from 'react-router-dom'
-import Create from './Create'
-import {InputGroup, FormControl, Container, Button, Navbar, Form, CardDeck, Card} from 'react-bootstrap'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  NavLink
+} from 'react-router-dom'
+import {Container, Nav, Alert, Table, Button, Form, Col, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
-const url = 'http://127.0.0.1:3001'
+const urlHari = 'http://127.0.0.1:3001/jadwal/hari'  
 
 class App extends Component{
-  // state empty tabel
   state = {
-    data:[],
-    username:'',
-    password:'',
+    jadwal:[],
+    antrian:[],
+    showModal:false,
+    hari:'',
+    jam:'',
+    psikolog:'',
+    availability:'',
+    nama:'',
+    nim:'',
+    jurusan:'',
+    deskripsi:'',
     // untuk detail
-    dUsername:'',
-    dPassword:''
+    dJam:'',
+    dPsikolog:'',
+    dAvailability:'',
+    dNama:'',
+    dNIM:'',
+    dJurusan:'',
+    dDeskripsi:'',
+    id:''
   }
-  constructor(props){
+
+  constructor(props) {
     super(props)
-    // this.getDataFromApi()
+    // this.getDataFromJadwal()
+    this.handleChange = this.handleChange.bind(this)
   }
+  
   // jalan ketika setelah render
-  // componentDidMount(){
-  //   this.getDataFromApi()
-  // }
-  //mendapatkan data dari api
-  getDataFromApi = async() => {
-    try {
-    // Axios.get(url)
-    // .then(item => console.log(item))
-    // .catch(error=> console.log({error}))
-    const resData = await Axios.get(url)
-    this.setState({data:resData.data})
-    } catch (error) {
-      console.log({error})
-      alert('terjadi kesalahan')
-    }
+  componentDidMount(){
+    // this.getDataFromJadwalHari()
+  }
+  
+  // pilih hari
+  handleChangeHari(event) {
+    this.setState({hari: event.target.value})
+    this.getDataFromJadwalHari()
   }
 
-  postDataFromApi = async()=>{
-    try {
-      if(!isNaN(this.state.umur)){
-        await Axios.post(url,{
-          nama:this.state.nama,
-          umur:Number(this.state.umur),
-          alamat:this.state.alamat
-        })
-        alert('Data Berhasil Ditambah')
-      } else {
-        alert('Umur Harus Nomor')
-      }
-      this.getDataFromApi()
-    } catch (error) {
-      console.log({error})
-      alert('terjadi kesalahan')
-    }
+  // pilih jurusan
+  handleChangeJurusan(event) {
+    this.setState({dJurusan: event.target.value})
+    
   }
-  editDataApi = async()=>{
-    const {id, dUmur, dAlamat, dNama} = this.state
-    try {
-      if(!isNaN(dUmur)){
-        await Axios.put(`${url}/${id}`,{
-          nama:dNama,
-          umur:Number(dUmur),
-          alamat:dAlamat
-        })
-        alert('Data Berhasil Diubah')
-        this.setState({showModal:false})
-        this.getDataFromApi()
-      } else {
-        alert('Umur Harus Nomor')
-      }
-    } catch (error) {
-      console.log({error})
-      alert('terjadi kesalahan')
-    }
-  }
-
-  deleteDataApi = async() => {
-    try {
-      const {id} = this.state
-      await Axios.delete(`${url}/${id}`)
-      alert('Data Berhasil dihapus')
-      this.setState({showModal:false})
-      this.getDataFromApi()
-    } catch (error) {
-      console.log({error})
-      alert('terjadi kesalahan')
-    }
-  }
-
+  
+  // -----------------------SHOW/HIDE MODAL-----------------------
   showModal = (item) => {
-    const {id, umur, alamat, nama} = item
-    this.setState({showModal:true, id:id, dUmur:umur, dAlamat:alamat, dNama:nama})
+    const {jam, psikolog} = item
+    this.setState({showModal:true, dJam:jam, dPsikolog:psikolog})
     console.log(this.state)
   }
-
   hideModal = () => {
     this.setState({showModal:false})
   }
 
+  // --------------------POST PUT GET DATABASE--------------------
+  // Mendapatkan data dari jadwal
+  getDataFromJadwalHari = async() => {
+    try {
+    // Axios.get(url)
+    // .then(item => console.log(item))
+    // .catch(error=> console.log({error}))
+    const url = `${urlHari}/${this.state.hari}`
+    console.log(this.state.hari + " test");
+    const resData = await Axios.get(url)
+    this.setState({jadwal:resData.data})
+    } catch (error) {
+      console.log({error})
+      alert('terjadi kesalahan')
+    }
+  }  
+  // Mendaftarkan data mahasiswa untuk sesi konseling
+  postDataMahasiswa = async() => {
+    const {hari, dJam, dPsikolog, dNama, dNIM, dJurusan, dDeskripsi} = this.state
+    try {
+      // if () {
+
+      // }
+      await Axios.post(`${urlAntrian}`,{
+        hari:hari,
+        jam:dJam,
+        psikolog:dPsikolog,
+        nama:dNama,
+        nim:Number(dNIM),
+        jurusan:dJurusan,
+        deskripsi:dDeskripsi
+      })
+    } catch (error) {
+      console.log({error})
+      alert('terjadi kesalahan')
+    }
+  }
+  
+  User1 = () => {
+    return(
+      <Container>
+        <Form>
+          <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Select a day</Form.Label>
+            <Form.Control as="select" value={this.state.hari} onChange={this.handleChangeHari}>
+              <option value="">Choose...</option>
+              <option value="Senin">Senin</option>
+              <option value="Selasa">Selasa</option>
+              <option value="Rabu">Rabu</option>
+              <option value="Kamis">Kamis</option>
+              <option value="Jumat">Jumat</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th style={{width:80, textAlign: "center"}}>Jam</th>
+              <th style={{textAlign: "center"}}>Konselor</th>
+              <th style={{textAlign: "center"}}>Availability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.jadwal.map((item, index)=>(
+              <tr key={index}>
+                {/* <td>{index+1}</td> */}
+                <td>{item.jam}</td>
+                <td>{item.psikolog}</td>
+                <td style={{width:80}}>{item.availability}
+                  <Button variant="outline-primary" onClick={()=>this.showModal(item)}>Propose</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        {/* Modal */}
+        <Modal show={this.state.showModal} onHide={()=>this.hideModal()}>
+          <Modal.Header closeButton>
+            <Modal.Title>Pengajuan Jadwal</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form style={{marginTop: 30}}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="formGridName">
+                  <Form.Label>Nama</Form.Label>
+                  <Form.Control value={this.state.dNama} onChange={(event)=>this.setState({dNama:event.target.value})} 
+                  style={{marginBottom:10}} required type="text" placeholder="Enter Name" />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridNIM">
+                  <Form.Label>NIM</Form.Label>
+                  <Form.Control required type="text" placeholder="Enter NIM" />
+                  <Form.Control.Feedback type="invalid">
+                    Please provide a valid NIM.
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
+
+              <Form.Group controlId="formGridJurusan">
+                <Form.Label>Pilih jurusan</Form.Label>
+                <Form.Control required as="select" value={this.state.dJurusan} onChange={this.handleChangeJurusan}>
+                    <option value="STI">STI</option>
+                    <option value="IF">IF</option>
+                    <option value="TPSDA">TPSDA</option>
+                    <option value="MA">MA</option>
+                    <option value="EB">EB</option>
+                    <option value="EL">EL</option>
+                  </Form.Control>
+                {/* <Form.Control.Feedback type="invalid">
+                    Please provide a valid email.
+                </Form.Control.Feedback> */}
+              </Form.Group>
+{/* 
+              <Form.Group controlId="formGridPhone">
+                <Form.Label>Phone Number</Form.Label>
+                <Form.Control required type="text" placeholder="08XXXXXXXXXX" />
+                <Form.Control.Feedback type="invalid">
+                    Please provide a valid phone number.
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Row>
+                <Form.Group as={Col} controlId="formGridDay">
+                  <Form.Label>Session</Form.Label>
+                  <Form.Control required as="select">
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                  </Form.Control>
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridTime">
+                  <Form.Label>Time</Form.Label>
+                  <Form.Control required as="select">
+                    <option>8.00</option>
+                    <option>9.00</option>
+                    <option>10.00</option>
+                    <option>11.00</option>
+                    <option>13.00</option>
+                    <option>14.00</option>
+                    <option>15.00</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Row> */}
+
+              <Form.Group controlId="formGridDesc">
+                <Form.Label>Description</Form.Label>
+                <Form.Control required type="text" value={this.state.dDeskripsi} onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
+                  style={{marginBottom:10}} placeholder="Please give a brief description" />
+                </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" type="submit" onClick={()=>this.postDataMahasiswa()}>
+                Submit
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
+    )
+  }
+
+  User2 = () => {
+    
+  }
+  
+  Admin = () => {
+    return(
+      <Container>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+            {/* nama, nim, jurusan, approveid, deskripsi */}
+              <th style={{width:80, textAlign: "center"}}>Nama</th>
+              <th style={{textAlign: "center"}}>NIM</th>
+              <th style={{textAlign: "center"}}>Jurusan</th>
+              <th style={{textAlign: "center"}}>Deskripsi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.antrian.map((item, index)=>(
+              <tr key={index}>
+                {/* <td>{index+1}</td> */}
+                <td>{item.nama}</td>
+                <td>{item.nim}</td>
+                <td>{item.jurusan}</td>
+                <td>{item.deskripsi}</td>
+                <td style={{width:80}}>{item.approvedid}
+                  <Button variant="outline-primary">Approve</Button>
+                </td>
+                {/* <td >
+                  <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
+                </td> */}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Container>
+    )
+  }
+  
   render(){
     return (
-      <Container>
-        <Navbar bg="dark" variant="dark">
-          <Navbar.Brand href="#home">
-            <img
-              alt=""
-              src="/logo.svg"
-              width="30"
-              height="30"
-              className="d-inline-block align-top"
-            />{' '}
-            Layanan BK
-          </Navbar.Brand>
-          <Navbar.Toggle />
-          <Form inline style={{marginLeft: 160}}>
-            <InputGroup style={{marginRight: 4}}>
-              <InputGroup.Prepend>
-                <InputGroup.Text id="basic-addon1">Username</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                style={{width: 150}} 
-                placeholder="NIM/NIP"
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-              />
-            </InputGroup>
-          </Form>
-          <Form inline>
-            <InputGroup>
-              <InputGroup.Prepend>
-                <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl type="text" placeholder="Kata sandi" className=" mr-sm-2" style={{width: 150}}/>
-              <Button type="submit" style={{marginRight: 10}}>Login</Button>
-              <Navbar.Text className="justify-content-end">
-                <Link to="/Create">or Create Account?</Link>
-              </Navbar.Text>
-            </InputGroup>
-          </Form>
-        </Navbar>
-        <Jumbotron>
-          <h1>Selamat Datang di Layanan BK dalam Jaringan!</h1>
-          <p>
-            Temukan konten psikologi yang telah dikurasi oleh tim kami!
-          </p>
-          <p>
-            <Button variant="primary">See more>></Button>
-          </p>
-        </Jumbotron>
-        <CardDeck>
-          <Card>
-            <Card.Img variant="top" src="https://ca-times.brightspotcdn.com/dims4/default/3bdc647/2147483647/strip/true/crop/3200x1768+0+0/resize/840x464!/quality/90/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F7c%2F1d%2Fc11c1b0e46cab3e7d14be3663c1e%2Fla-et-mn-tiff-movies-02.jpg" />
-            <Card.Body>
-              <Card.Title>JOKER dan Seberapa Jauh Kita Memahami Manusia</Card.Title>
-            </Card.Body>
-            <Card.Footer>
-              <small className="text-muted">Last updated 19 October 2019</small>
-            </Card.Footer>
-          </Card>
-          <Card>
-            <Card.Img variant="top" src="https://econsultancy.imgix.net/content/uploads/2018/09/04155306/social-media-image-.jpg" />
-            <Card.Body>
-              <Card.Title>Mengapa Kita Sering Curhat di Media Sosial?</Card.Title>
-            </Card.Body>
-            <Card.Footer>
-              <small className="text-muted">Last updated 2 November 2019</small>
-            </Card.Footer>
-          </Card>
-          <Card>
-            <Card.Img variant="top" src="https://www.therecoveryvillage.com/wp-content/uploads/2019/07/Fear-vs-Phobia.jpg" />
-            <Card.Body>
-              <Card.Title>Mengenal Lebih Dalam Mengenai Fobia</Card.Title>
-            </Card.Body>
-            <Card.Footer>
-              <small className="text-muted">Last updated 8 November 2019</small>
-            </Card.Footer>
-          </Card>
-        </CardDeck>
-      </Container>
-      // <Container>
-      //   {/* Tampilan From */}
-      //   <InputGroup style={{margin:10}} className="mb-3">
-      //    <InputGroup.Prepend>
-      //       <InputGroup.Text id="basic-addon1">A</InputGroup.Text>
-      //     </InputGroup.Prepend>
-      //     <FormControl
-      //       onChange={(event)=>this.setState({nama:event.target.value})}
-      //       style={{marginRight:10}}
-      //       placeholder="Nama"
-      //       aria-label="Nama"
-      //       aria-describedby="basic-addon1"
-      //     />
-      //     <InputGroup.Prepend>
-      //       <InputGroup.Text id="basic-addon1">B</InputGroup.Text>
-      //     </InputGroup.Prepend>
-      //     <FormControl
-      //       onChange={(event)=>this.setState({umur:event.target.value})}
-      //       style={{marginRight:10}}
-      //       placeholder="Umur"
-      //       aria-label="Umur"
-      //       aria-describedby="basic-addon1"
-      //     />
-      //     <InputGroup.Prepend>
-      //       <InputGroup.Text id="basic-addon1">C</InputGroup.Text>
-      //     </InputGroup.Prepend>
-      //     <FormControl
-      //     onChange={(event)=>this.setState({alamat:event.target.value})}
-      //      style={{marginRight:10}}
-      //       placeholder="Alamat"
-      //       aria-label="Alamat"
-      //       aria-describedby="basic-addon1"
-      //     />
-      //     <Button onClick={()=>this.postDataFromApi()} variant='primary'>ADD</Button>
-      //    </InputGroup>
-      //   {/* Tampilan Table */}
-      //   <Table striped bordered hover variant="dark">
-      //     <thead>
-      //       <tr>
-      //         <th>#</th>
-      //         <th>Nama</th>
-      //         <th>Umur</th>
-      //         <th>Alamat</th>
-      //         <th>Action</th>
-      //       </tr>
-      //     </thead>
-      //     <tbody>
-      //      {this.state.data.map((item, index)=>(
-      //        <tr key={index}>
-      //         <td>{index+1}</td>
-      //         <td>{item.nama}</td>
-      //         <td>{item.umur}</td>
-      //         <td>{item.alamat}</td>
-      //         <td style={{width:50}}>
-      //           <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
-      //         </td>
-      //      </tr>
-      //      ))}
-      //     </tbody>
-      //   </Table>
-      //   {/* Modal */}
-
-      //   <Modal show={this.state.showModal} onHide={()=>this.hideModal()}>
-      //   <Modal.Header closeButton>
-      //     <Modal.Title>Edit Data</Modal.Title>
-      //   </Modal.Header>
-      //   <Modal.Body>
-      //     <FormControl 
-      //     value={this.state.dNama} 
-      //     onChange={(event)=>this.setState({dNama:event.target.value})} 
-      //     style={{marginBottom:10}} 
-      //     placeholder='Nama'
-      //     />
-      //     <FormControl 
-      //     value={this.state.dUmur} 
-      //     onChange={(event)=>this.setState({dUmur:event.target.value})} 
-      //     style={{marginBottom:10}} 
-      //     placeholder='Umur'
-      //     />
-      //     <FormControl 
-      //     value={this.state.dAlamat} 
-      //     onChange={(event)=>this.setState({dAlamat:event.target.value})} 
-      //     style={{marginBottom:10}} 
-      //     placeholder='Alamat'
-      //     />
-      //   </Modal.Body>
-      //   <Modal.Footer>
-      //     <Button variant="danger" onClick={()=>this.deleteDataApi()}>
-      //       Delete
-      //     </Button>
-      //     <Button variant="primary" onClick={()=>this.editDataApi()}>
-      //       Save Changes
-      //     </Button>
-      //   </Modal.Footer>
-      // </Modal>
-      // </Container>
+      <Router>
+        <Container>
+          <Alert variant="success" style={{marginTop:10}}>
+            <Alert.Heading>Selamat Datang di Layanan BK-Online!</Alert.Heading>
+            <p>
+              Berikut ditampilkan jadwal per hari yang akan diperbarui tiap minggu. Silahkan melakukan pengajuan jadwal 
+              sesuai ketersediaan. 
+            </p>
+            <hr />
+            {/* <p className="mb-0">
+              Saya masuk sebagai:
+            </p> */}
+            <Nav variant="pills" defaultActiveKey="/">
+              <Nav.Item>
+                <Nav.Link as={NavLink} to="/" activeClassName="selected" eventKey="user1" title="user1">User1</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={NavLink} to="/user2" activeClassName="selected" eventKey="user2" title="user2">User2</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={NavLink} to="/admin" activeClassName="selected" eventKey="admin" title="admin">Admin</Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </Alert>
+          
+          <Switch>
+            <Route exact path="/">
+              <this.User1 />
+            </Route>
+            {/* <Route path="/user2">
+              <User2 />
+            </Route>*/}
+            <Route path="/admin">
+              <this.Admin />
+            </Route>
+          </Switch>
+        </Container>
+     </Router>
     )
   }
 }
 
 export default App
+
