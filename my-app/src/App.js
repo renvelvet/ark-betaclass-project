@@ -8,7 +8,8 @@ import {
 import {Container, Nav, Alert, Table, Button, Form, Col, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
-const urlHari = 'http://127.0.0.1:3001/jadwal/hari'  
+const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
+const urlAntrian = 'http://127.0.0.1:3001/antrian'    
 
 class App extends Component{
   state = {
@@ -23,6 +24,7 @@ class App extends Component{
     nim:'',
     jurusan:'',
     deskripsi:'',
+    approveid:'',
     // untuk detail
     dJam:'',
     dPsikolog:'',
@@ -31,18 +33,19 @@ class App extends Component{
     dNIM:'',
     dJurusan:'',
     dDeskripsi:'',
+    dApproveId:'',
     id:''
   }
 
   constructor(props) {
     super(props)
     // this.getDataFromJadwal()
-    this.handleChange = this.handleChange.bind(this)
+    this.handleChangeHari = this.handleChangeHari.bind(this)
   }
   
   // jalan ketika setelah render
   componentDidMount(){
-    // this.getDataFromJadwalHari()
+    
   }
   
   // pilih hari
@@ -59,8 +62,8 @@ class App extends Component{
   
   // -----------------------SHOW/HIDE MODAL-----------------------
   showModal = (item) => {
-    const {jam, psikolog} = item
-    this.setState({showModal:true, dJam:jam, dPsikolog:psikolog})
+    const {hari, jam, psikolog} = item
+    this.setState({showModal:true, hari:hari, dJam:jam, dPsikolog:psikolog})
     console.log(this.state)
   }
   hideModal = () => {
@@ -82,23 +85,58 @@ class App extends Component{
       console.log({error})
       alert('terjadi kesalahan')
     }
+  }
+  // Mendapatkan data dari tabel antrian
+  getDataFromAntrian = async() => {
+    try {
+      // Axios.get(url)
+      // .then(item => console.log(item))
+      // .catch(error=> console.log({error}))
+      const url = `${urlAntrian}`
+      const resData = await Axios.get(url)
+      this.setState({antrian:resData.data})
+      } catch (error) {
+        console.log({error})
+        alert('terjadi kesalahan')
+      }
   }  
   // Mendaftarkan data mahasiswa untuk sesi konseling
   postDataMahasiswa = async() => {
-    const {hari, dJam, dPsikolog, dNama, dNIM, dJurusan, dDeskripsi} = this.state
+    
     try {
       // if () {
 
       // }
-      await Axios.post(`${urlAntrian}`,{
+      console.log(this.state.hari)
+      await Axios.post(urlAntrian,{
+        hari:this.state.hari,
+        jam:this.state.dJam,
+        nama:this.state.dNama,
+        nim:Number(this.state.dNIM),
+        jurusan:this.state.dJurusan,
+        approveid:0,
+        deskripsi:this.state.dDeskripsi
+      
+      })
+      this.setState({showModal:false})
+    } catch (error) {
+      console.log({error})
+      alert('terjadi kesalahan')
+    }
+  }
+  // Mengubah availability
+  editDataJadwal = async()=>{
+    const {hari, dJam, dPsikolog, dAvailability, dApproveId} = this.state
+    this.setState({dAvailability:false, dApproveId:0})
+    try {
+      await Axios.put(`${urlHari}/${this.state.hari}/jam/${this.state.dJam}`, {
         hari:hari,
         jam:dJam,
         psikolog:dPsikolog,
-        nama:dNama,
-        nim:Number(dNIM),
-        jurusan:dJurusan,
-        deskripsi:dDeskripsi
+        availability:dAvailability,
+        approveid:dApproveId
       })
+      alert('Data berhasil diperbarui')
     } catch (error) {
       console.log({error})
       alert('terjadi kesalahan')
@@ -120,7 +158,7 @@ class App extends Component{
               <option value="Jumat">Jumat</option>
             </Form.Control>
           </Form.Group>
-        </Form>
+        </Form> 
 
         <Table striped bordered hover>
           <thead>
@@ -154,13 +192,14 @@ class App extends Component{
               <Form.Row>
                 <Form.Group as={Col} controlId="formGridName">
                   <Form.Label>Nama</Form.Label>
-                  <Form.Control value={this.state.dNama} onChange={(event)=>this.setState({dNama:event.target.value})} 
+                  <Form.Control onChange={(event)=>this.setState({dNama:event.target.value})} 
                   style={{marginBottom:10}} required type="text" placeholder="Enter Name" />
                 </Form.Group>
 
                 <Form.Group as={Col} controlId="formGridNIM">
                   <Form.Label>NIM</Form.Label>
-                  <Form.Control required type="text" placeholder="Enter NIM" />
+                  <Form.Control onChange={(event)=>this.setState({dNIM:event.target.value})}
+                  required type="text" placeholder="Enter NIM" />
                   <Form.Control.Feedback type="invalid">
                     Please provide a valid NIM.
                   </Form.Control.Feedback>
@@ -169,7 +208,7 @@ class App extends Component{
 
               <Form.Group controlId="formGridJurusan">
                 <Form.Label>Pilih jurusan</Form.Label>
-                <Form.Control required as="select" value={this.state.dJurusan} onChange={this.handleChangeJurusan}>
+                <Form.Control required as="select" value={this.state.dJurusan} onChange={(event)=>this.setState({dJurusan:event.target.value})}>
                     <option value="STI">STI</option>
                     <option value="IF">IF</option>
                     <option value="TPSDA">TPSDA</option>
@@ -218,7 +257,7 @@ class App extends Component{
 
               <Form.Group controlId="formGridDesc">
                 <Form.Label>Description</Form.Label>
-                <Form.Control required type="text" value={this.state.dDeskripsi} onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
+                <Form.Control required type="text" onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
                   style={{marginBottom:10}} placeholder="Please give a brief description" />
                 </Form.Group>
             </Form>
@@ -239,11 +278,14 @@ class App extends Component{
   
   Admin = () => {
     return(
+      // getDataFromAntrian()
       <Container>
         <Table striped bordered hover>
           <thead>
             <tr>
             {/* nama, nim, jurusan, approveid, deskripsi */}
+              <th style={{textAlign: "center"}}>Hari</th>
+              <th style={{textAlign: "center"}}>Jam</th>
               <th style={{width:80, textAlign: "center"}}>Nama</th>
               <th style={{textAlign: "center"}}>NIM</th>
               <th style={{textAlign: "center"}}>Jurusan</th>
@@ -254,12 +296,14 @@ class App extends Component{
             {this.state.antrian.map((item, index)=>(
               <tr key={index}>
                 {/* <td>{index+1}</td> */}
+                <td>{item.hari}</td>
+                <td>{item.jam}</td>
                 <td>{item.nama}</td>
                 <td>{item.nim}</td>
                 <td>{item.jurusan}</td>
                 <td>{item.deskripsi}</td>
                 <td style={{width:80}}>{item.approvedid}
-                  <Button variant="outline-primary">Approve</Button>
+                  <Button variant="outline-primary" onClick={()=>this.editDataJadwal(item)}>Approve</Button>
                 </td>
                 {/* <td >
                   <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
@@ -293,7 +337,7 @@ class App extends Component{
               <Nav.Item>
                 <Nav.Link as={NavLink} to="/user2" activeClassName="selected" eventKey="user2" title="user2">User2</Nav.Link>
               </Nav.Item>
-              <Nav.Item>
+              <Nav.Item  onClick={()=>this.getDataFromAntrian()}>
                 <Nav.Link as={NavLink} to="/admin" activeClassName="selected" eventKey="admin" title="admin">Admin</Nav.Link>
               </Nav.Item>
             </Nav>

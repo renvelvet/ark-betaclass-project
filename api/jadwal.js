@@ -50,12 +50,13 @@ app.post('/jadwal',async(req,res) => {
 
 
 // edit jadwal
-app.put('/jadwal/:id',async(req,res)=>{
-    const {hari, jam, psikolog, availability, approveid} = req.body
-    const id = req.params.id
+app.put('/jadwal/hari/:hari/jam/:jam',async(req,res)=>{
+    const {psikolog, availability, approveid} = req.body
+    const hari = req.params.hari
+    const jam = req.params.jam
     
     await db.query(`update jadwal set hari = '${hari}', jam = '${jam}', psikolog = '${psikolog}', availability = ${availability}, approveid = ${approveid}
-    where id = ${id}`)
+    where hari = '${hari}' and jam = '${jam}'`)
     res.json('data berhasil diubah')
 })
 
