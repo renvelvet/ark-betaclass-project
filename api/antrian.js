@@ -21,9 +21,9 @@ app.get('/antrian',async(req, res)=>{
 // menambah antrian
 app.post('/antrian',async(req,res) => {
     try {
-        const {nama, nim, jurusan, approveid, deskripsi} = req.body
+        const {hari, jam, nama, nim, jurusan, approveid, deskripsi} = req.body
         await db.query(`insert into antrian(nama, nim, jurusan, approveid, deskripsi)
-         values('${nama}', ${nim}, '${jurusan}', ${approveid}, '${deskripsi}')`)
+         values('${hari}', '${jam}', '${nama}', ${nim}, '${jurusan}', ${approveid}, '${deskripsi}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {
