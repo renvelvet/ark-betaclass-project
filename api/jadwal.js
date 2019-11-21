@@ -37,9 +37,11 @@ app.get('/jadwal/hari/:hari',async(req, res)=>{
 // menambah jadwal
 app.post('/jadwal',async(req,res) => {
     try {
-        const {hari, jam, psikolog, availability, approveid} = req.body
-        await db.query(`insert into jadwal(hari, jam, psikolog, availability, approveid)
-         values('${hari}', ${jam}, '${psikolog}', ${availability}, ${approveid})`)
+
+        console.log("ii")
+        const {hari, jam, psikolog} = req.body
+        await db.query(`insert into jadwal(hari, jam, psikolog)
+         values('${hari}', '${jam}', '${psikolog}')`)
         console.log(req.body)
         res.json(req.body)
     } catch (error) {

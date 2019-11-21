@@ -5,15 +5,17 @@ import {
   Route,
   NavLink
 } from 'react-router-dom'
-import {Container, Nav, Jumbotron, Table, FormControl, InputGroup, Button, Form, Col, Modal} from 'react-bootstrap'
+import {Container, Nav, Jumbotron, Table, Button, Form, Col, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 
 const urlHari = 'http://127.0.0.1:3001/jadwal/hari'
+const urlJadwal = 'http://127.0.0.1:3001/jadwal'
 const urlAntrian = 'http://127.0.0.1:3001/antrian'    
 
 class App extends Component{
   state = {
     jadwal:[],
+    jadwalH:[],
     antrian:[],
     showModal:false,
     hari:'Senin',
@@ -25,6 +27,10 @@ class App extends Component{
     jurusan:'',
     deskripsi:'',
     approveid:'',
+    // ---------- TAMBAH JADWAL -----------
+    jPsikolog:'',
+    jJam:'',
+    jHari:'',
     // untuk detail
     dJam:'',
     dPsikolog:'',
@@ -41,6 +47,8 @@ class App extends Component{
     super(props)
     
     this.handleChangeHari = this.handleChangeHari.bind(this)
+    this.handleChangeJHari = this.handleChangeJHari.bind(this)
+    this.handleChangeJJam = this.handleChangeJJam.bind(this)
   }
   
   // jalan ketika setelah render
@@ -60,6 +68,14 @@ class App extends Component{
     
   }
   
+  // Ganti JHari
+  handleChangeJHari(event) {
+    this.setState({jHari: event.target.value})
+  }
+  // Ganti JJam
+  handleChangeJJam(event) {
+    this.setState({jJam: event.target.value})
+  }
   // -----------------------SHOW/HIDE MODAL-----------------------
   showModal = (item) => {
     const {hari, jam, psikolog} = item
@@ -79,11 +95,24 @@ class App extends Component{
     // .catch(error=> console.log({error}))
     const url = `${urlHari}/${a}`
     const resData = await Axios.get(url)
-    this.setState({jadwal:resData.data})
+    this.setState({jadwalH:resData.data})
     } catch (error) {
       console.log({error})
       alert('terjadi kesalahan')
     }
+  }
+  getDataFromJadwal = async() => {
+    try {
+      // Axios.get(url)
+      // .then(item => console.log(item))
+      // .catch(error=> console.log({error}))
+      const url = `${urlJadwal}`
+      const resData = await Axios.get(url)
+      this.setState({jadwal:resData.data})
+      } catch (error) {
+        console.log({error})
+        alert('terjadi kesalahan')
+      }
   }
   // Mendapatkan data dari tabel antrian
   getDataFromAntrian = async() => {
@@ -99,6 +128,21 @@ class App extends Component{
         alert('terjadi kesalahan')
       }
   }  
+  // Menambahkan jadwal
+  postDataForJadwal = async() => {
+    try {
+      await Axios.post(urlJadwal, {
+        hari:this.state.jHari,
+        jam:this.state.jJam,
+        psikolog:this.state.jPsikolog
+        // availability:true,
+        // approveid:Number(0)
+      })
+    } catch (err) {
+      console.log({err})
+      alert('gagal tambah jadwal')
+    }
+  }
   // Mendaftarkan data mahasiswa untuk sesi konseling
   postDataMahasiswa = async() => {
     
@@ -113,7 +157,7 @@ class App extends Component{
         nama:this.state.dNama,
         nim:Number(this.state.dNIM),
         jurusan:this.state.dJurusan,
-        approveid:0,
+        approveid:Number(0),
         deskripsi:this.state.dDeskripsi
       
       })
@@ -165,20 +209,7 @@ class App extends Component{
               <Nav.Link eventKey="Jumat">Jumat</Nav.Link>
             </Nav.Item>
           </Nav>
-          {/* <Form>
-            <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>Select a day</Form.Label>
-              <Form.Control as="select" value={this.state.hari} onChange={this.handleChangeHari}>
-                <option value="">Choose...</option>
-                <option value="Senin">Senin</option>
-                <option value="Selasa">Selasa</option>
-                <option value="Rabu">Rabu</option>
-                <option value="Kamis">Kamis</option>
-                <option value="Jumat">Jumat</option>
-              </Form.Control>
-            </Form.Group>
-          </Form> 
- */}
+
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -188,7 +219,7 @@ class App extends Component{
               </tr>
             </thead>
             <tbody>
-              {this.state.jadwal.map((item, index)=>(
+              {this.state.jadwalH.map((item, index)=>(
                 <tr key={index}>
                   {/* <td>{index+1}</td> */}
                   <td>{item.jam}</td>
@@ -239,41 +270,7 @@ class App extends Component{
                       Please provide a valid email.
                   </Form.Control.Feedback> */}
                 </Form.Group>
-  {/* 
-                <Form.Group controlId="formGridPhone">
-                  <Form.Label>Phone Number</Form.Label>
-                  <Form.Control required type="text" placeholder="08XXXXXXXXXX" />
-                  <Form.Control.Feedback type="invalid">
-                      Please provide a valid phone number.
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formGridDay">
-                    <Form.Label>Session</Form.Label>
-                    <Form.Control required as="select">
-                      <option>Monday</option>
-                      <option>Tuesday</option>
-                      <option>Wednesday</option>
-                      <option>Thursday</option>
-                      <option>Friday</option>
-                    </Form.Control>
-                  </Form.Group>
-
-                  <Form.Group as={Col} controlId="formGridTime">
-                    <Form.Label>Time</Form.Label>
-                    <Form.Control required as="select">
-                      <option>8.00</option>
-                      <option>9.00</option>
-                      <option>10.00</option>
-                      <option>11.00</option>
-                      <option>13.00</option>
-                      <option>14.00</option>
-                      <option>15.00</option>
-                    </Form.Control>
-                  </Form.Group>
-                </Form.Row> */}
-
+  
                 <Form.Group controlId="formGridDesc">
                   <Form.Label>Description</Form.Label>
                   <Form.Control required type="text" onChange={(event)=>this.setState({dDeskripsi:event.target.value})} 
@@ -323,7 +320,7 @@ class App extends Component{
                 <td>{item.jurusan}</td>
                 <td>{item.deskripsi}</td>
                 <td style={{width:80}}>{item.approvedid}
-                  <Button variant="outline-primary" onClick={()=>this.editDataJadwal(item)}>Approve</Button>
+                  <Button variant="outline-primary" onClick={()=>this.editDataJadwal(item)} disabled="true">Approve</Button>
                 </td>
                 {/* <td >
                   <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
@@ -338,48 +335,58 @@ class App extends Component{
 
   TambahJadwal = () => {
     return (
-      <Container>
-        <InputGroup style={{margin:10}} className="mb-3">
-         <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">A</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-            onChange={(event)=>this.setState({nama:event.target.value})}
-            style={{marginRight:10}}
-            placeholder="Nama"
-            aria-label="Nama"
-            aria-describedby="basic-addon1"
-          />
-          <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">B</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-            onChange={(event)=>this.setState({umur:event.target.value})}
-            style={{marginRight:10}}
-            placeholder="Umur"
-            aria-label="Umur"
-            aria-describedby="basic-addon1"
-          />
-          <InputGroup.Prepend>
-            <InputGroup.Text id="basic-addon1">C</InputGroup.Text>
-          </InputGroup.Prepend>
-          <FormControl
-          onChange={(event)=>this.setState({alamat:event.target.value})}
-           style={{marginRight:10}}
-            placeholder="Alamat"
-            aria-label="Alamat"
-            aria-describedby="basic-addon1"
-          />
-          <Button onClick={()=>this.postDataFromApi()} variant='primary'>ADD</Button>
-         </InputGroup>
-        {/* Tampilan Table */}
-        <Table striped bordered hover variant="dark">
+      <Container style={{marginTop:20}}>
+        <Form>
+          <Form.Group controlId="formGridPsikolog">
+            <Form.Label>Conselor's Name</Form.Label>
+            <Form.Control 
+              onChange={(event)=>this.setState({jPsikolog:event.target.value})}
+              placeholder="Enter Conselor's Name" />
+          </Form.Group>
+
+          <Form.Row>
+          <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Day</Form.Label>
+            <Form.Control as="select" select value={this.state.jHari} onChange={this.handleChangeJHari}>
+              <option value="">Choose...</option>
+              <option value="Senin">Senin</option>
+              <option value="Selasa">Selasa</option>
+              <option value="Rabu">Rabu</option>
+              <option value="Kamis">Kamis</option>
+              <option value="Jumat">Jumat</option>                
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Session</Form.Label>
+            <Form.Control as="select" select value={this.state.jJam} onChange={this.handleChangeJJam}>
+              <option value="">Choose...</option>
+              <option value="08:00">08:00</option>
+              <option value="09:00">09:00</option>        
+              <option value="10:00">10:00</option>
+              <option value="11:00">11:00</option>
+              <option value="12:00">12:00</option>                
+              <option value="13:00">13:00</option>
+              <option value="14:00">14:00</option>        
+              <option value="15:00">15:00</option>
+            </Form.Control>
+          </Form.Group>
+
+          </Form.Row>
+
+          <Button onClick={()=>this.postDataForJadwal()} variant="primary" type="submit">
+          ADD
+          </Button>
+          </Form>
+        
+        {/* Tabel Jadwal */}
+        <Table striped bordered hover style={{marginTop:20}}>
           <thead>
             <tr>
-              <th>#</th>
               <th>Hari</th>
               <th>Jam</th>
               <th>Psikolog</th>
+              {/* <th>Availability</th> */}
               <th>Ubah Jadwal</th>
             </tr>
           </thead>
@@ -389,6 +396,10 @@ class App extends Component{
               <td>{item.hari}</td>
               <td>{item.jam}</td>
               <td>{item.psikolog}</td>
+              {/* <td>{item.availability}</td> */}
+              {/* <Button variant="success" size="sm">
+                Tersedia
+              </Button> */}
               <td style={{width:50}}>
                 <Button variant='warning' onClick={()=>this.showModal(item)}>Edit/Delete</Button>
               </td>
@@ -409,7 +420,7 @@ class App extends Component{
           <Nav.Item>
             <Nav.Link as={NavLink} to="/admin" eventKey="antrian">Antrian</Nav.Link>
           </Nav.Item>
-          <Nav.Item>
+          <Nav.Item onClick={()=>this.getDataFromJadwal()}>
             <Nav.Link as={NavLink} to="/tambahjadwal" eventKey="tambahjadwal">Tambah Jadwal</Nav.Link>
           </Nav.Item>
         </Nav>
